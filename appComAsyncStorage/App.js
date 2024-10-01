@@ -19,6 +19,16 @@ export default function App() {
     }
   }
 
+  const removerNome = async () => {
+    try {
+      await AsyncStorage.removeItem('@nome_usuario')
+      alert('Nome removido com sucesso!')
+      carregarDados()
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   const carregarDados = async () => {
     try {
       const valor = await AsyncStorage.getItem('@nome_usuario')
@@ -40,6 +50,7 @@ export default function App() {
       <Text>Nome armazenado: {nomeArmazenado}</Text>
       <TextInput placeholder='Digite seu nome' value={nome} onChangeText={setNome} style={styles.input}/>
       <Button title='Salvar nome' onPress={salvarNome} />
+      <Button title='Remover nome' onPress={removerNome} />
     </View>
   );
 }
