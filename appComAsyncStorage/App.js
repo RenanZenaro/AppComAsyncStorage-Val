@@ -34,6 +34,8 @@ export default function App() {
       const valor = await AsyncStorage.getItem('@nome_usuario')
       if(valor != null){
         setNomeArmazenado(valor)
+      } else {
+        setNomeArmazenado('')
       }
     } catch (error) {
       console.log(error);
