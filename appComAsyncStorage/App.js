@@ -1,74 +1,100 @@
-import { Text, View, StyleSheet, TextInput, Button } from 'react-native';
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Button, TextInput } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// or any files within the Snack
-import AssetExample from './components/AssetExample';
+const App = () => {
+  const [name, setName] = useState('');
+  const [age, setAge] = useState('');
+  const [email, setEmail] = useState('');
+  const [userInfo, setUserInfo] = useState(null);
 
-export default function App() {
-  const [nome, setNome] = useState('')
-  const [nomeArmazenado, setNomeArmazenado] = useState('')
-
-  const salvarNome = async () => {
+  // Função para salvar o objeto JSON no AsyncStorage
+  const saveUserInfo = async () => {
     try {
-      await AsyncStorage.setItem('@nome_usuario', nome)
-      alert('Nome salvo com sucesso!')
-      carregarDados()
-    } catch (error) {
-      console.log(error);
+      const user = {
+        name: name,
+        age: age,
+        email: email,
+      };
+      // Converter o objeto em uma string JSON
+      const jsonValue = JSON.stringify(user);
+      await AsyncStorage.setItem('@user_info', jsonValue);
+      alert('Informações do usuário salvas!');
+      loadUserInfo()
+    } catch (e) {
+      console.log(e);
     }
-  }
+  };
 
-  const removerNome = async () => {
+  // Função para carregar as informações armazenadas no AsyncStorage
+  const loadUserInfo = async () => {
     try {
-      await AsyncStorage.removeItem('@nome_usuario')
-      alert('Nome removido com sucesso!')
-      carregarDados()
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  const carregarDados = async () => {
-    try {
-      const valor = await AsyncStorage.getItem('@nome_usuario')
-      if(valor != null){
-        setNomeArmazenado(valor)
-      } else {
-        setNomeArmazenado('')
+      const jsonValue = await AsyncStorage.getItem('@user_info');
+      if (jsonValue !== null) {
+        // Converter a string JSON de volta para objeto
+        setUserInfo(JSON.parse(jsonValue));
       }
-    } catch (error) {
-      console.log(error);
+    } catch (e) {
+      console.log(e);
     }
-  }
+  };
 
-  // Usar useEffect para carregar o nome ao iniciar o aplicativo
+  // Usar useEffect para carregar as informações ao iniciar o aplicativo
   useEffect(() => {
-    carregarDados()
-}, [])
+    loadUserInfo();
+  }, []);
 
   return (
-    <View style={styles.container}>
-      <Text>Nome armazenado: {nomeArmazenado}</Text>
-      <TextInput placeholder='Digite seu nome' value={nome} onChangeText={setNome} style={styles.input}/>
-      <Button title='Salvar nome' onPress={salvarNome} />
-      <Button title='Remover nome' onPress={removerNome} />
+    <View style={{ padding: 20 }}>
+      {userInfo ? (
+        <View>
+          <Text>Nome: {userInfo.name}</Text>
+          <Text>Idade: {userInfo.age}</Text>
+          <Text>Email: {userInfo.email}</Text>
+        </View>
+      ) : (
+        <Text>Nenhuma informação armazenada.</Text>
+      )}
+      <TextInput
+        placeholder="Digite seu nome"
+        value={name}
+        onChangeText={setName}
+        style={{
+          height: 40,
+          borderColor: 'gray',
+          borderWidth: 1,
+          marginVertical: 10,
+          padding: 10,
+        }}
+      />
+      <TextInput
+        placeholder="Digite sua idade"
+        value={age}
+        onChangeText={setAge}
+        keyboardType="numeric"
+        style={{
+          height: 40,
+          borderColor: 'gray',
+          borderWidth: 1,
+          marginVertical: 10,
+          padding: 10,
+        }}
+      />
+      <TextInput
+        placeholder="Digite seu e-mail"
+        value={email}
+        onChangeText={setEmail}
+        style={{
+          height: 40,
+          borderColor: 'gray',
+          borderWidth: 1,
+          marginVertical: 10,
+          padding: 10,
+        }}
+      />
+      <Button title="Salvar Informações" onPress={saveUserInfo} />
     </View>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    backgroundColor: '#ecf0f1',
-    padding: 8,
-  },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginVertical: 10,
-    padding: 10
-  }
-});
+export default App;

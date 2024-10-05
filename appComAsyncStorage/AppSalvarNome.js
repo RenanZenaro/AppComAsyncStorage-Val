@@ -2,9 +2,6 @@ import { Text, View, StyleSheet, TextInput, Button } from 'react-native';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// or any files within the Snack
-import AssetExample from './components/AssetExample';
-
 export default function App() {
   const [nome, setNome] = useState('')
   const [nomeArmazenado, setNomeArmazenado] = useState('')
